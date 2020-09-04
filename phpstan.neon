@@ -1,0 +1,14 @@
+includes:
+    - vendor/phpstan/phpstan-mockery/extension.neon
+
+parameters:
+    level: 8
+    bootstrapFiles:
+        - tests/config.php
+    paths:
+        - src
+        - tests
+
+    ignoreErrors:
+        - message: "#has no return typehint specified#"
+          path: tests/*

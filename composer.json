@@ -1,0 +1,32 @@
+{
+    "name": "tsterker/solarium-collection-manager",
+    "description": "Rudimentary SolrCloud collection management helper",
+    "type": "library",
+    "require": {
+        "solarium/solarium": "^6.0"
+    },
+    "require-dev": {
+        "php": "^7.2",
+        "phpunit/phpunit": "^9.3",
+        "mockery/mockery": "^1.4",
+        "symfony/event-dispatcher": "^5.1",
+        "phpstan/phpstan-mockery": "^0.12.7"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tim Sterker",
+            "email": "t.sterker@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "TSterker\\SolariumCollectionManager\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TSterker\\SolariumCollectionManager\\Tests\\": "tests/"
+        }
+    }
+}
