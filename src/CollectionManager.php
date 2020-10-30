@@ -102,6 +102,45 @@ class CollectionManager
     }
 
     /**
+     * Alias collection
+     *
+     * @var string $collection
+     * @var string $alias
+     * @return mixed[] JSON response
+     */
+    public function alias(string $collection, string $alias): array
+    {
+        return $this->rawApiRequest("admin/collections?action=CREATEALIAS&name={$alias}&collections={$collection}");
+    }
+
+    /**
+     * Delete Alias collection
+     *
+     * @var string $alias
+     * @return mixed[] JSON response
+     */
+    public function deleteAlias(string $alias): array
+    {
+        return $this->rawApiRequest("admin/collections?action=DELETEALIAS&name={$alias}");
+    }
+
+    public function hasAlias(string $alias): bool
+    {
+        return in_array($alias, $this->getAliases());
+    }
+
+    /**
+     * Delete Alias collection
+     *
+     * @var string $alias
+     * @return mixed[] JSON response
+     */
+    public function getAliases(): array
+    {
+        return array_keys($this->rawApiRequest("admin/collections?action=LISTALIASES")['aliases']);
+    }
+
+    /**
      * Delete collection
      *
      * @var string $name
@@ -116,5 +155,31 @@ class CollectionManager
         $q->setAction($action);
 
         return $this->client->collections($q);
+    }
+
+    /**
+     * @param string $path e.g. admin/collections?action=CREATEALIAS&name=alias1&collections=collection1";
+     * @return mixed[] JSON response
+     */
+    protected function rawApiRequest(string $path): array
+    {
+        $endpoint = $this->client->getEndpoint();
+
+        $scheme = $endpoint->getScheme();
+        $host = $endpoint->getHost();
+        $port = $endpoint->getPort();
+
+        $base_uri = "{$scheme}://{$host}:{$port}/solr";
+
+        $url = "{$base_uri}/{$path}";
+        $res = file_get_contents($url);
+
+        assert(false !== $res, "Request failed: $url");
+
+        $json = json_decode($res, true);
+
+        assert(false !== $json && null !== $json, "Response could not be parsed as json: $res");
+
+        return $json;
     }
 }

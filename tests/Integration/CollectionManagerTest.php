@@ -99,4 +99,44 @@ class CollectionManagerTest extends TestCase
         $this->assertArrayHasKey('foo', $collections);
         $this->assertArrayHasKey('bar', $collections);
     }
+
+    /** @test */
+    public function it_aliases_collections()
+    {
+        $this->assertFalse($this->manager->hasAlias('foo-alias'));
+
+        $this->manager->create('foo');
+        $this->manager->alias('foo', 'foo-alias');
+
+        $this->assertTrue($this->manager->hasAlias('foo-alias'));
+    }
+
+
+    /** @test */
+    public function it_deletes_alias_if_exists()
+    {
+        $this->manager->create('foo');
+        $this->manager->alias('foo', 'foo-alias');
+
+        $this->assertTrue($this->manager->hasAlias('foo-alias'));
+
+        $this->manager->deleteAlias('foo-alias');
+
+        $this->assertFalse($this->manager->hasAlias('foo-alias'));
+
+        $this->manager->deleteAlias('foo-alias');  // NOTE: Second call won't fail
+    }
+
+    /** @test */
+    public function it_lists_aliases()
+    {
+        $this->manager->create('foo');
+        $this->manager->alias('foo', 'foo-alias-1');
+        $this->manager->alias('foo', 'foo-alias-2');
+
+        $this->assertEquals(
+            ['foo-alias-1', 'foo-alias-2'],
+            $this->manager->getAliases(),
+        );
+    }
 }

@@ -24,6 +24,10 @@ class TestCase extends \PHPUnit\Framework\TestCase
     {
         $manager = $this->getManager();
 
+        foreach ($manager->getAliases() as $alias) {
+            $manager->deleteAlias($alias);
+        }
+
         foreach ($manager->getCollections() as $collection) {
             $manager->delete($collection->getName());
         }
