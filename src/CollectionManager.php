@@ -130,14 +130,34 @@ class CollectionManager
     }
 
     /**
-     * Delete Alias collection
+     * List all aliases
      *
-     * @var string $alias
-     * @return mixed[] JSON response
+     * @return string[] alias names
      */
     public function getAliases(): array
     {
-        return array_keys($this->rawApiRequest("admin/collections?action=LISTALIASES")['aliases']);
+        return array_keys($this->getAliasMappings());
+    }
+
+    /**
+     * List all aliases with collection mappings
+     *
+     * @return string[] alias names
+     */
+    public function getAliasMappings(): array
+    {
+        return $this->rawApiRequest("admin/collections?action=LISTALIASES")['aliases'];
+    }
+
+    /**
+     * Get collection for given alias or null
+     *
+     * @var string $alias
+     * @return null|string
+     */
+    public function getAliasedCollection(string $alias): ?string
+    {
+        return $this->getAliasMappings()[$alias] ?? null;
     }
 
     /**

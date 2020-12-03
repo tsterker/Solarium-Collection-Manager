@@ -109,8 +109,23 @@ class CollectionManagerTest extends TestCase
         $this->manager->alias('foo', 'foo-alias');
 
         $this->assertTrue($this->manager->hasAlias('foo-alias'));
+        $this->assertEquals('foo', $this->manager->getAliasedCollection('foo-alias'));
     }
 
+    /** @test */
+    public function it_replaces_alias_if_exists()
+    {
+        $this->assertFalse($this->manager->hasAlias('foo-alias'));
+
+        $this->manager->create('foo');
+        $this->manager->create('bar');
+
+        $this->manager->alias('foo', 'the-alias');
+        $this->assertEquals('foo', $this->manager->getAliasedCollection('the-alias'));
+
+        $this->manager->alias('bar', 'the-alias');
+        $this->assertEquals('bar', $this->manager->getAliasedCollection('the-alias'));
+    }
 
     /** @test */
     public function it_deletes_alias_if_exists()
@@ -137,6 +152,25 @@ class CollectionManagerTest extends TestCase
         $this->assertEquals(
             ['foo-alias-1', 'foo-alias-2'],
             $this->manager->getAliases(),
+        );
+    }
+
+    /** @test */
+    public function it_lists_alias_to_collection_mappings()
+    {
+        $this->manager->create('foo');
+        $this->manager->create('bar');
+        $this->manager->alias('foo', 'foo-alias-1');
+        $this->manager->alias('foo', 'foo-alias-2');
+        $this->manager->alias('bar', 'bar-alias');
+
+        $this->assertEquals(
+            [
+                'foo-alias-1' => 'foo',
+                'foo-alias-2' => 'foo',
+                'bar-alias' => 'bar',
+            ],
+            $this->manager->getAliasMappings(),
         );
     }
 }
