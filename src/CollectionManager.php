@@ -81,20 +81,36 @@ class CollectionManager
     /**
      * Create collection
      *
-     * @var string $name
+     * @param string $name
+     * @param array<string, mixed> $options
      * @return ResultInterface|ClusterStatusResult
      */
-    public function create(string $name): ResultInterface
+    public function create(string $name, array $options = []): ResultInterface
     {
+        $options = array_merge([
+            'num_shards' => 1,
+            'max_shards_per_node' => 1,
+            'auto_add_replicas' => 0,
+            'router_name' => 'compositeId',
+            'nrt_replicas' => 1,  // alias: replication_factor
+            'tlog_replicas' => 0,
+            'pull_replicas' => 0,
+        ], $options);
+
         $q = $this->client->createCollections();
 
         $action = $q->createCreate()
-            ->setNumShards(1)  // important to make faceting work without thiking about it
-            ->setMaxShardsPerNode(1)
-            ->setReplicationFactor(1)
-            ->setAutoAddReplicas(false)
-            ->setRouterName('compositeId')
+            ->setNumShards($options['num_shards'])
+            ->setMaxShardsPerNode($options['max_shards_per_node'])
+            ->setAutoAddReplicas($options['auto_add_replicas'])
+            ->setRouterName($options['router_name'])
+
+            ->setNrtReplicas($options['nrt_replicas'] ?? $options['replication_factor'])
+            ->setPullReplicas($options['pull_replicas'])
+            ->setTlogReplicas($options['tlog_replicas'])
+
             ->setName($name);
+
 
         $q->setAction($action);
 
