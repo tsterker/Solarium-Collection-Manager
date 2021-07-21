@@ -25,7 +25,7 @@
     </coverage>
 
     <logging>
-        <testdoxText outputFile="php://stdout"/>
+        <!-- <testdoxText outputFile="php://stdout"/> -->
     </logging>
 
     <php>
