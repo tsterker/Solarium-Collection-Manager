@@ -10,7 +10,7 @@ use Solarium\QueryType\Server\Collections\Result\ClusterStatusResult;
 use Solarium\QueryType\Server\Query\Action\ActionInterface;
 use TypeError;
 
-class CollectionManager
+class CollectionManager implements CollectionManagerInterface
 {
     /** @var Client */
     protected $client;
