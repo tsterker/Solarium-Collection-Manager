@@ -89,7 +89,7 @@ class CollectionManager implements CollectionManagerInterface
         $defaults = [
             'num_shards' => 1,
             'router_name' => 'compositeId',
-            'nrt_replicas' => 1,  // alias: replication_factor
+            'nrt_replicas' => 1,
             'tlog_replicas' => 0,
             'pull_replicas' => 0,
 
@@ -112,7 +112,7 @@ class CollectionManager implements CollectionManagerInterface
             ->setNumShards($options['num_shards'])
             ->setRouterName($options['router_name'])
 
-            ->setNrtReplicas($options['nrt_replicas'] ?? $options['replication_factor'])
+            ->setNrtReplicas($options['nrt_replicas'])
             ->setPullReplicas($options['pull_replicas'])
             ->setTlogReplicas($options['tlog_replicas'])
 

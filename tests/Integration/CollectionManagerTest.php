@@ -33,7 +33,7 @@ class CollectionManagerTest extends TestCase
     {
         $this->manager->create('foo', [
             'num_shards' => 2,
-            'nrt_replicas' => 2,  // alias: replication_factor
+            'nrt_replicas' => 2,
             'pull_replicas' => 1,
             'tlog_replicas' => 1,
             'router_name' => 'compositeId',
