@@ -2,6 +2,7 @@
 
 namespace TSterker\SolariumCollectionManager;
 
+use InvalidArgumentException;
 use Solarium\Client;
 use Solarium\Core\Client\State\CollectionState;
 use Solarium\Core\Query\Result\ResultInterface;
@@ -85,7 +86,7 @@ class CollectionManager implements CollectionManagerInterface
      */
     public function create(string $name, array $options = []): ResultInterface
     {
-        $options = array_merge([
+        $defaults = [
             'num_shards' => 1,
             'router_name' => 'compositeId',
             'nrt_replicas' => 1,  // alias: replication_factor
@@ -95,7 +96,15 @@ class CollectionManager implements CollectionManagerInterface
             // NOTE: maxShardsPerNode has been removed in Solr 9.0
             // @see https://solr.apache.org/guide/solr/latest/upgrade-notes/major-changes-in-solr-9.html
             // 'max_shards_per_node' => 1,
-        ], $options);
+        ];
+
+        $unknownKeys = array_diff_key($options, $defaults);
+
+        if (count($unknownKeys) > 0) {
+            throw new InvalidArgumentException("Unknown options: " . json_encode(array_keys($unknownKeys)));
+        }
+
+        $options = array_merge($defaults, $options);
 
         $q = $this->client->createCollections();
 

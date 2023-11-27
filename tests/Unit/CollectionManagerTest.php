@@ -2,6 +2,7 @@
 
 namespace TSterker\SolariumCollectionManager\Tests\Unit;
 
+use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
 use Solarium\Client;
@@ -64,6 +65,21 @@ class CollectionManagerTest extends TestCase
 
         $this->assertEquals(['dummy' => 'data'], $data->getData());
     }
+
+    /** @test */
+    public function it_throws_on_unknown_options()
+    {
+        $manager = new CollectionManager(Mockery::mock(Client::class));
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Unknown options: [\"foo\",\"bar\"]");
+
+        $data = $manager->create('foo', [
+            'num_shards' => 111,
+            'foo' => 'xxx',
+            'bar' => 'yyy',
+        ]);
+    }
 }
 
 class ClientMockBuilder
@@ -80,10 +96,9 @@ class ClientMockBuilder
 
         $this->query = Mockery::mock(Query::class);
 
-        $this->client->shouldReceive('createCollections')->once()->andReturn($this->query);
+        $this->client->shouldReceive('createCollections')->andReturn($this->query);
 
         $this->client->shouldReceive('collections')
-            ->once()
             ->with($this->query)
             ->andReturn(Mockery::mock(
                 ClusterStatusResult::class,
