@@ -3,7 +3,7 @@ version: "3.4"
 services:
 
   solr:
-    image: solr:8.4
+    image: solr:9.4
     container_name: solarium-collection-manager-solr
     ports:
       - "8983:8983"
@@ -14,3 +14,5 @@ services:
       - start
       - -cloud
       - -f  # start solr in foreground
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:8983/solr/admin/collections?action=CLUSTERSTATUS"]

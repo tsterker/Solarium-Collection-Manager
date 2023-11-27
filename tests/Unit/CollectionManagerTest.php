@@ -18,14 +18,12 @@ class CollectionManagerTest extends TestCase
     {
         /** @var Create|MockInterface $createAction */
         $createAction = Mockery::mock(Create::class, function ($m) {
-            $m->shouldReceive('setNumShards')->with(1)->andReturnSelf();
-            $m->shouldReceive('setMaxShardsPerNode')->with(1)->andReturnSelf();
-            $m->shouldReceive('setNrtReplicas')->with(1)->andReturnSelf();
-            $m->shouldReceive('setPullReplicas')->with(0)->andReturnSelf();
-            $m->shouldReceive('setTlogReplicas')->with(0)->andReturnSelf();
-            $m->shouldReceive('setAutoAddReplicas')->with(false)->andReturnSelf();
-            $m->shouldReceive('setRouterName')->with('compositeId')->andReturnSelf();
-            $m->shouldReceive('setName')->with('foo')->andReturnSelf();
+            $m->shouldReceive('setNumShards')->once()->with(1)->andReturnSelf();
+            $m->shouldReceive('setNrtReplicas')->once()->with(1)->andReturnSelf();
+            $m->shouldReceive('setPullReplicas')->once()->with(0)->andReturnSelf();
+            $m->shouldReceive('setTlogReplicas')->once()->with(0)->andReturnSelf();
+            $m->shouldReceive('setRouterName')->once()->with('compositeId')->andReturnSelf();
+            $m->shouldReceive('setName')->once()->with('foo')->andReturnSelf();
         });
 
         $client = ClientMockBuilder::new()
@@ -43,14 +41,12 @@ class CollectionManagerTest extends TestCase
     {
         /** @var Create|MockInterface $createAction */
         $createAction = Mockery::mock(Create::class, function ($m) {
-            $m->shouldReceive('setNumShards')->with(111)->andReturnSelf();
-            $m->shouldReceive('setMaxShardsPerNode')->with(222)->andReturnSelf();
-            $m->shouldReceive('setNrtReplicas')->with(333)->andReturnSelf();
-            $m->shouldReceive('setTlogReplicas')->with(444)->andReturnSelf();
-            $m->shouldReceive('setPullReplicas')->with(555)->andReturnSelf();
-            $m->shouldReceive('setAutoAddReplicas')->with(true)->andReturnSelf();
-            $m->shouldReceive('setRouterName')->with('xxx')->andReturnSelf();
-            $m->shouldReceive('setName')->with('foo')->andReturnSelf();
+            $m->shouldReceive('setNumShards')->once()->with(111)->andReturnSelf();
+            $m->shouldReceive('setNrtReplicas')->once()->with(333)->andReturnSelf();
+            $m->shouldReceive('setTlogReplicas')->once()->with(444)->andReturnSelf();
+            $m->shouldReceive('setPullReplicas')->once()->with(555)->andReturnSelf();
+            $m->shouldReceive('setRouterName')->once()->with('xxx')->andReturnSelf();
+            $m->shouldReceive('setName')->once()->with('foo')->andReturnSelf();
         });
 
         $client = ClientMockBuilder::new()
@@ -60,11 +56,9 @@ class CollectionManagerTest extends TestCase
 
         $data = $manager->create('foo', [
             'num_shards' => 111,
-            'max_shards_per_node' => 222,
             'nrt_replicas' => 333,
             'tlog_replicas' => 444,
             'pull_replicas' => 555,
-            'auto_add_replicas' => true,
             'router_name' => 'xxx',
         ]);
 
@@ -86,9 +80,10 @@ class ClientMockBuilder
 
         $this->query = Mockery::mock(Query::class);
 
-        $this->client->shouldReceive('createCollections')->andReturn($this->query);
+        $this->client->shouldReceive('createCollections')->once()->andReturn($this->query);
 
         $this->client->shouldReceive('collections')
+            ->once()
             ->with($this->query)
             ->andReturn(Mockery::mock(
                 ClusterStatusResult::class,
@@ -103,8 +98,8 @@ class ClientMockBuilder
 
     public function expectCreateAction(ActionInterface $action): self
     {
-        $this->query->shouldReceive('createCreate')->andReturn($action);
-        $this->query->shouldReceive('setAction')->with($action);
+        $this->query->shouldReceive('createCreate')->once()->andReturn($action);
+        $this->query->shouldReceive('setAction')->once()->with($action);
 
         return $this;
     }

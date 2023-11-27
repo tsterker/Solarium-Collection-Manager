@@ -24,12 +24,8 @@ class CollectionManagerTest extends TestCase
         $this->assertEquals('foo.AUTOCREATED', $fooState->getConfigName());
         $this->assertEquals('compositeId', $fooState->getRouterName());
         $this->assertCount(1, $fooState->getShards());
-        $this->assertSame(1, $fooState->getMaxShardsPerNode());
         $this->assertSame(1, $fooState->getReplicationFactor());
         $this->assertSame('0', $fooState->getTlogReplicas());  // NOTE: Returned as string. Solarium Bug?
-
-        // TODO: setAutoAddReplicas not respected in CollectionManager::create?
-        $this->assertSame(true, $fooState->isAutoAddReplicas());
     }
 
     /** @test */
@@ -37,11 +33,9 @@ class CollectionManagerTest extends TestCase
     {
         $this->manager->create('foo', [
             'num_shards' => 2,
-            'max_shards_per_node' => 10,  // TODO: Use smaller number that forces multiple nodes to be used? But this would depend on test setup with multiple nodes to work.
             'nrt_replicas' => 2,  // alias: replication_factor
             'pull_replicas' => 1,
             'tlog_replicas' => 1,
-            'auto_add_replicas' => true,
             'router_name' => 'compositeId',
         ]);
 
@@ -55,8 +49,6 @@ class CollectionManagerTest extends TestCase
         $this->assertEquals('compositeId', $fooState->getRouterName());
         $this->assertCount(2, $fooState->getShards());
         $this->assertCount(2, $fooState->getShardLeaders());
-        $this->assertSame(10, $fooState->getMaxShardsPerNode());
-        $this->assertSame(true, $fooState->isAutoAddReplicas());
         $this->assertSame(2, $fooState->getReplicationFactor());
         $this->assertSame('1', $fooState->getTlogReplicas());
         // TODO: How to get pull replica count?

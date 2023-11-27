@@ -4,7 +4,7 @@
 version: '3.7'
 services:
   solr1:
-    image: solr:8.7.0
+    image: solr:9.4
     container_name: solr1
     ports:
      - "8981:8983"
@@ -16,9 +16,13 @@ services:
       - zoo1
       - zoo2
       - zoo3
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:8983/solr/admin/collections?action=CLUSTERSTATUS"]
+        interval: 1s
+        retries: 30
 
   solr2:
-    image: solr:8.7.0
+    image: solr:9.4
     container_name: solr2
     ports:
      - "8982:8983"
@@ -30,9 +34,13 @@ services:
       - zoo1
       - zoo2
       - zoo3
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:8983/solr/admin/collections?action=CLUSTERSTATUS"]
+        interval: 1s
+        retries: 30
 
   solr3:
-    image: solr:8.7.0
+    image: solr:9.4
     container_name: solr3
     ports:
      - "8983:8983"
@@ -44,9 +52,13 @@ services:
       - zoo1
       - zoo2
       - zoo3
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:8983/solr/admin/collections?action=CLUSTERSTATUS"]
+        interval: 1s
+        retries: 30
 
   zoo1:
-    image: zookeeper:3.6.2
+    image: zookeeper:3.9
     container_name: zoo1
     restart: always
     hostname: zoo1
@@ -60,9 +72,13 @@ services:
       ZOO_CFG_EXTRA: "metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true"
     networks:
       - solr
+    healthcheck:
+        test: nc -z localhost 2181 || exit -1
+        interval: 1s
+        retries: 30
 
   zoo2:
-    image: zookeeper:3.6.2
+    image: zookeeper:3.9
     container_name: zoo2
     restart: always
     hostname: zoo2
@@ -76,9 +92,13 @@ services:
       ZOO_CFG_EXTRA: "metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true"
     networks:
       - solr
+    healthcheck:
+        test: nc -z localhost 2181 || exit -1
+        interval: 1s
+        retries: 30
 
   zoo3:
-    image: zookeeper:3.6.2
+    image: zookeeper:3.9
     container_name: zoo3
     restart: always
     hostname: zoo3
@@ -92,6 +112,10 @@ services:
       ZOO_CFG_EXTRA: "metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true"
     networks:
       - solr
+    healthcheck:
+        test: nc -z localhost 2181 || exit -1
+        interval: 1s
+        retries: 30
 
 networks:
   solr:

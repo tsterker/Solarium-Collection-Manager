@@ -30,10 +30,11 @@ interface CollectionManagerInterface
     /**
      * Create collection
      *
-     * @var string $name
+     * @param string $name
+     * @param array<string, mixed> $options
      * @return ResultInterface|ClusterStatusResult
      */
-    public function create(string $name): ResultInterface;
+    public function create(string $name, array $options = []): ResultInterface;
 
     /**
      * Alias collection

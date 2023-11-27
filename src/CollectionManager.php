@@ -5,9 +5,7 @@ namespace TSterker\SolariumCollectionManager;
 use Solarium\Client;
 use Solarium\Core\Client\State\CollectionState;
 use Solarium\Core\Query\Result\ResultInterface;
-use Solarium\QueryType\Server\Collections\Query\Query;
 use Solarium\QueryType\Server\Collections\Result\ClusterStatusResult;
-use Solarium\QueryType\Server\Query\Action\ActionInterface;
 use TypeError;
 
 class CollectionManager implements CollectionManagerInterface
@@ -89,20 +87,20 @@ class CollectionManager implements CollectionManagerInterface
     {
         $options = array_merge([
             'num_shards' => 1,
-            'max_shards_per_node' => 1,
-            'auto_add_replicas' => 0,
             'router_name' => 'compositeId',
             'nrt_replicas' => 1,  // alias: replication_factor
             'tlog_replicas' => 0,
             'pull_replicas' => 0,
+
+            // NOTE: maxShardsPerNode has been removed in Solr 9.0
+            // @see https://solr.apache.org/guide/solr/latest/upgrade-notes/major-changes-in-solr-9.html
+            // 'max_shards_per_node' => 1,
         ], $options);
 
         $q = $this->client->createCollections();
 
         $action = $q->createCreate()
             ->setNumShards($options['num_shards'])
-            ->setMaxShardsPerNode($options['max_shards_per_node'])
-            ->setAutoAddReplicas($options['auto_add_replicas'])
             ->setRouterName($options['router_name'])
 
             ->setNrtReplicas($options['nrt_replicas'] ?? $options['replication_factor'])
