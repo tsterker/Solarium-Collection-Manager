@@ -1,34 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
-         bootstrap="tests/bootstrap.php"
-         colors="true"
->
-    <testsuites>
-        <testsuite name="SolariumCollectionManager">
-            <directory suffix="Test.php">./tests</directory>
-        </testsuite>
-    </testsuites>
-
-    <coverage includeUncoveredFiles="true"
-              processUncoveredFiles="true"
-              ignoreDeprecatedCodeUnits="true"
-              disableCodeCoverageIgnore="true"
-    >
-        <include>
-            <directory suffix=".php">src</directory>
-        </include>
-
-        <report>
-            <text outputFile="php://stdout" showUncoveredFiles="false" showOnlySummary="true"/>
-        </report>
-    </coverage>
-
-    <logging>
-        <testdoxText outputFile="php://stdout"/>
-    </logging>
-
-    <php>
-        <!-- <server name="NAME" value="VALUE"/> -->
-    </php>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" bootstrap="tests/bootstrap.php" colors="true" cacheDirectory=".phpunit.cache">
+  <testsuites>
+    <testsuite name="SolariumCollectionManager">
+      <directory suffix="Test.php">./tests</directory>
+    </testsuite>
+  </testsuites>
+  <coverage includeUncoveredFiles="true" ignoreDeprecatedCodeUnits="true" disableCodeCoverageIgnore="true">
+    <report>
+      <text outputFile="php://stdout" showUncoveredFiles="false" showOnlySummary="true"/>
+    </report>
+  </coverage>
+  <logging>
+    <testdoxText outputFile="php://stdout"/>
+  </logging>
+  <php>
+    <!-- <server name="NAME" value="VALUE"/> -->
+  </php>
+  <source>
+    <include>
+      <directory suffix=".php">src</directory>
+    </include>
+  </source>
 </phpunit>
