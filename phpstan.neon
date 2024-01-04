@@ -10,5 +10,5 @@ parameters:
         - tests
 
     ignoreErrors:
-        - message: "#has no return typehint specified#"
+        - message: "#has no return type([hint]?) specified#"
           path: tests/*

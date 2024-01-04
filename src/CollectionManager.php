@@ -81,7 +81,7 @@ class CollectionManager
     /**
      * Create collection
      *
-     * @var string $name
+     * @param string $name
      * @return ResultInterface|ClusterStatusResult
      */
     public function create(string $name): ResultInterface
@@ -104,8 +104,8 @@ class CollectionManager
     /**
      * Alias collection
      *
-     * @var string $collection
-     * @var string $alias
+     * @param string $collection
+     * @param string $alias
      * @return mixed[] JSON response
      */
     public function alias(string $collection, string $alias): array
@@ -116,7 +116,7 @@ class CollectionManager
     /**
      * Delete Alias collection
      *
-     * @var string $alias
+     * @param string $alias
      * @return mixed[] JSON response
      */
     public function deleteAlias(string $alias): array
@@ -152,7 +152,7 @@ class CollectionManager
     /**
      * Get collection for given alias or null
      *
-     * @var string $alias
+     * @param string $alias
      * @return null|string
      */
     public function getAliasedCollection(string $alias): ?string
@@ -163,7 +163,7 @@ class CollectionManager
     /**
      * Delete collection
      *
-     * @var string $name
+     * @param string $name
      * @return ResultInterface|ClusterStatusResult
      */
     public function delete(string $name): ResultInterface
