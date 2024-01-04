@@ -1,36 +1,40 @@
 name: CI
 
-on: [push]
+on:
+  - push
+  - pull_request
 
 jobs:
-  build-test:
+  php_matrix:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        version: [7.4, 8.3]
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '7.4'
-        extensions: mbstring, intl, sockets
-        coverage: xdebug    
-        tools: composer, prestissimo
-        # tools: phpunit, composer, prestissimo, php-cs-fixer, phpstan
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.version }}
+          extensions: mbstring, intl, sockets
+          coverage: xdebug
+          tools: composer, prestissimo
+          # tools: phpunit, composer, prestissimo, php-cs-fixer, phpstan
 
-    - run: composer install
+      - run: composer install
 
-    - name: Start SolrCloud
-      run: docker-compose up -d
+      - name: Start SolrCloud
+        run: docker-compose up -d
 
-    - name: Sleep a few seconds to wait for Solr to be ready
-      uses: jakejarvis/wait-action@master
-      with:
-        time: '10s'
+      - name: Sleep a few seconds to wait for Solr to be ready
+        uses: jakejarvis/wait-action@master
+        with:
+          time: "10s"
 
-    - name: PHPUnit
-      run: ./vendor/bin/phpunit --testdox --colors=always
+      - name: PHPUnit
+        run: ./vendor/bin/phpunit --testdox --colors=always
 
-    - name: PHPStan
-      run: ./vendor/bin/phpstan analyse --no-progress
+      - name: PHPStan
+        run: ./vendor/bin/phpstan analyse --no-progress
