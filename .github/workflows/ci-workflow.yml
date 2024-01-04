@@ -7,6 +7,10 @@ on:
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    php_matrix:
+      strategy:
+        php:
+          version: [7.2, 8.3]
 
     steps:
       - name: Checkout
@@ -15,7 +19,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "7.4"
+          php-version: ${{ php.version }}
           extensions: mbstring, intl, sockets
           coverage: xdebug
           tools: composer, prestissimo
