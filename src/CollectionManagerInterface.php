@@ -39,8 +39,8 @@ interface CollectionManagerInterface
     /**
      * Alias collection
      *
-     * @var string $collection
-     * @var string $alias
+     * @param string $collection
+     * @param string $alias
      * @return mixed[] JSON response
      */
     public function alias(string $collection, string $alias): array;
@@ -48,7 +48,7 @@ interface CollectionManagerInterface
     /**
      * Delete Alias collection
      *
-     * @var string $alias
+     * @param string $alias
      * @return mixed[] JSON response
      */
     public function deleteAlias(string $alias): array;
@@ -72,7 +72,7 @@ interface CollectionManagerInterface
     /**
      * Get collection for given alias or null
      *
-     * @var string $alias
+     * @param string $alias
      * @return null|string
      */
     public function getAliasedCollection(string $alias): ?string;
@@ -80,7 +80,7 @@ interface CollectionManagerInterface
     /**
      * Delete collection
      *
-     * @var string $name
+     * @param string $name
      * @return ResultInterface|ClusterStatusResult
      */
     public function delete(string $name): ResultInterface;
