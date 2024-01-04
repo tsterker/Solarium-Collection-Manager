@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     php_matrix:
       strategy:
-        php:
+        matrix:
           version: [7.2, 8.3]
 
     steps:
@@ -19,7 +19,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ php.version }}
+          php-version: ${{ matrix.version }}
           extensions: mbstring, intl, sockets
           coverage: xdebug
           tools: composer, prestissimo
