@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: [7.2, 8.3]
+        version: [7.4, 8.3]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
