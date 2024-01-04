@@ -24,6 +24,7 @@ class CollectionManagerTest extends TestCase
             $m->shouldReceive('setPullReplicas')->once()->with(0)->andReturnSelf();
             $m->shouldReceive('setTlogReplicas')->once()->with(0)->andReturnSelf();
             $m->shouldReceive('setRouterName')->once()->with('compositeId')->andReturnSelf();
+            $m->shouldReceive('setWaitForFinalState')->once()->with(false)->andReturnSelf();
             $m->shouldReceive('setName')->once()->with('foo')->andReturnSelf();
         });
 
@@ -47,6 +48,7 @@ class CollectionManagerTest extends TestCase
             $m->shouldReceive('setTlogReplicas')->once()->with(444)->andReturnSelf();
             $m->shouldReceive('setPullReplicas')->once()->with(555)->andReturnSelf();
             $m->shouldReceive('setRouterName')->once()->with('xxx')->andReturnSelf();
+            $m->shouldReceive('setWaitForFinalState')->once()->with(true)->andReturnSelf();
             $m->shouldReceive('setName')->once()->with('foo')->andReturnSelf();
         });
 
@@ -61,6 +63,7 @@ class CollectionManagerTest extends TestCase
             'tlog_replicas' => 444,
             'pull_replicas' => 555,
             'router_name' => 'xxx',
+            'wait_for_final_state' => true,
         ]);
 
         $this->assertEquals(['dummy' => 'data'], $data->getData());

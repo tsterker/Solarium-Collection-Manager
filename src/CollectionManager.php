@@ -92,6 +92,7 @@ class CollectionManager implements CollectionManagerInterface
             'nrt_replicas' => 1,
             'tlog_replicas' => 0,
             'pull_replicas' => 0,
+            'wait_for_final_state' => false,  // false is the default (https://solr.apache.org/guide/solr/latest/deployment-guide/collection-management.html)
 
             // NOTE: maxShardsPerNode has been removed in Solr 9.0
             // @see https://solr.apache.org/guide/solr/latest/upgrade-notes/major-changes-in-solr-9.html
@@ -115,6 +116,8 @@ class CollectionManager implements CollectionManagerInterface
             ->setNrtReplicas($options['nrt_replicas'])
             ->setPullReplicas($options['pull_replicas'])
             ->setTlogReplicas($options['tlog_replicas'])
+
+            ->setWaitForFinalState($options['wait_for_final_state'])
 
             ->setName($name);
 
