@@ -2,15 +2,14 @@
 
 namespace TSterker\SolariumCollectionManager;
 
+use InvalidArgumentException;
 use Solarium\Client;
 use Solarium\Core\Client\State\CollectionState;
 use Solarium\Core\Query\Result\ResultInterface;
-use Solarium\QueryType\Server\Collections\Query\Query;
 use Solarium\QueryType\Server\Collections\Result\ClusterStatusResult;
-use Solarium\QueryType\Server\Query\Action\ActionInterface;
 use TypeError;
 
-class CollectionManager
+class CollectionManager implements CollectionManagerInterface
 {
     /** @var Client */
     protected $client;
@@ -82,19 +81,46 @@ class CollectionManager
      * Create collection
      *
      * @param string $name
+     * @param array<string, mixed> $options
      * @return ResultInterface|ClusterStatusResult
      */
-    public function create(string $name): ResultInterface
+    public function create(string $name, array $options = []): ResultInterface
     {
+        $defaults = [
+            'num_shards' => 1,
+            'router_name' => 'compositeId',
+            'nrt_replicas' => 1,
+            'tlog_replicas' => 0,
+            'pull_replicas' => 0,
+            'wait_for_final_state' => false,  // false is the default (https://solr.apache.org/guide/solr/latest/deployment-guide/collection-management.html)
+
+            // NOTE: maxShardsPerNode has been removed in Solr 9.0
+            // @see https://solr.apache.org/guide/solr/latest/upgrade-notes/major-changes-in-solr-9.html
+            // 'max_shards_per_node' => 1,
+        ];
+
+        $unknownKeys = array_diff_key($options, $defaults);
+
+        if (count($unknownKeys) > 0) {
+            throw new InvalidArgumentException("Unknown options: " . json_encode(array_keys($unknownKeys)));
+        }
+
+        $options = array_merge($defaults, $options);
+
         $q = $this->client->createCollections();
 
         $action = $q->createCreate()
-            ->setNumShards(1)  // important to make faceting work without thiking about it
-            ->setMaxShardsPerNode(1)
-            ->setReplicationFactor(1)
-            ->setAutoAddReplicas(false)
-            ->setRouterName('compositeId')
+            ->setNumShards($options['num_shards'])
+            ->setRouterName($options['router_name'])
+
+            ->setNrtReplicas($options['nrt_replicas'])
+            ->setPullReplicas($options['pull_replicas'])
+            ->setTlogReplicas($options['tlog_replicas'])
+
+            ->setWaitForFinalState($options['wait_for_final_state'])
+
             ->setName($name);
+
 
         $q->setAction($action);
 

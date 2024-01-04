@@ -36,6 +36,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected function getManager(): CollectionManager
     {
         $adapter = new Curl;
+        $adapter->setTimeout((int) SOLR_TIMEOUT);
+
         $eventDispatcher = new EventDispatcher;
 
         $config = [

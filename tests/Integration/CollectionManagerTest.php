@@ -2,17 +2,58 @@
 
 namespace TSterker\SolariumCollectionManager\Tests\Integration;
 
+use Solarium\QueryType\Server\Collections\Result\ClusterStatusResult;
+
 class CollectionManagerTest extends TestCase
 {
 
     /** @test */
-    public function it_creates_collections()
+    public function it_creates_non_replicated_collection_by_default()
     {
         $this->assertFalse($this->manager->hasCollection('foo'));
 
         $this->manager->create('foo');
 
         $this->assertTrue($this->manager->hasCollection('foo'));
+
+        /** @var ClusterStatusResult */
+        $status = $this->manager->status('foo');
+        $fooState = $status->getClusterState()->getCollectionState('foo');
+
+        $this->assertEquals('foo', $fooState->getName());
+        $this->assertEquals('foo.AUTOCREATED', $fooState->getConfigName());
+        $this->assertEquals('compositeId', $fooState->getRouterName());
+        $this->assertCount(1, $fooState->getShards());
+        $this->assertSame(1, $fooState->getReplicationFactor());
+        $this->assertSame('0', $fooState->getTlogReplicas());  // NOTE: Returned as string. Solarium Bug?
+    }
+
+    /** @test */
+    public function it_creates_collection_with_options()
+    {
+        $this->manager->create('foo', [
+            'num_shards' => 2,
+            'nrt_replicas' => 2,
+            'pull_replicas' => 1,
+            'tlog_replicas' => 1,
+            'router_name' => 'compositeId',
+        ]);
+
+        $this->assertTrue($this->manager->hasCollection('foo'));
+
+        /** @var ClusterStatusResult */
+        $status = $this->manager->status('foo');
+
+        $fooState = $status->getClusterState()->getCollectionState('foo');
+
+        $this->assertEquals('compositeId', $fooState->getRouterName());
+        $this->assertCount(2, $fooState->getShards());
+        $this->assertCount(2, $fooState->getShardLeaders());
+        $this->assertSame(2, $fooState->getReplicationFactor());
+        $this->assertSame('1', $fooState->getTlogReplicas());
+        // TODO: How to get pull replica count?
+
+        // $this->assertTrue(1 < count($fooState->getNodesBaseUris(), 'Expect at least 2 nodes to be configured');  // Depends on test setup
     }
 
     /** @test */

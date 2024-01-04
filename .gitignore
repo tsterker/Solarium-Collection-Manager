@@ -2,3 +2,4 @@ composer.lock
 vendor/
 htmlcov/
 .phpunit.result.cache
+.phpunit.cache/

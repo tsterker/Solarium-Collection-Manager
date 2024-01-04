@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+- feat: Support Solr Cloud collection configuration during creation (#3)
+- build: Support for PHP 8 and upgrade dependencies (#4)
+- test: Use multi-node docker-compose setup
+- test: Configure Solr client timeout
+- docs: Extend README documentation
+
 ## 1.0.0 (2024-01-04)
 
 Tag first official release.
