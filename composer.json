@@ -6,11 +6,11 @@
         "solarium/solarium": "^6.0"
     },
     "require-dev": {
-        "php": "^7.2",
-        "phpunit/phpunit": "^9.3",
-        "mockery/mockery": "^1.4",
+        "php": "^7.4 || ^8.0",
+        "phpunit/phpunit": "^9.3 || ^10.0",
+        "mockery/mockery": "^1.4 || ^1.6",
         "symfony/event-dispatcher": "^5.1",
-        "phpstan/phpstan-mockery": "^0.12.7"
+        "phpstan/phpstan-mockery": "^0.12.7 || ^1.1"
     },
     "license": "MIT",
     "authors": [
