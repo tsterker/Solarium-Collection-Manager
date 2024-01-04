@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - test: Configure Solr client timeout
 - docs: Extend README documentation
 
+## 1.0.0 (2024-01-04)
+
+Tag first official release.
+
 ## 0.1.1 (2020-12-19)
 
 ### Added:
