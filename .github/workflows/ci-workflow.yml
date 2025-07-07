@@ -30,7 +30,7 @@ jobs:
       - run: composer install
 
       - name: Start SolrCloud
-        run: docker compose up -d
+        run: docker compose up -d --wait
 
       - name: Sleep a few seconds to wait for Solr to be ready
         uses: jakejarvis/wait-action@master
