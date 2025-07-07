@@ -6,8 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] (YYYY-mm-dd)
 
-- fix: authentication credentials configured for an endpoint are not used for raw HTTP requests to Solr
-- feat: better error message in case of failed raw HTTP requests to Solr
+This release ensures that authentication configuration of the Solr client is properly utilized also for raw Solr HTTP requests.
+We do this by now using Solr test setup that requires authentication and thus force all our integration tests to be properly authenticated to work.
+
+- fix: Authentication credentials configured for an endpoint are not used for raw HTTP requests to Solr
+- feat: Better error message in case of failed raw HTTP requests to Solr
+- test: Move to [bitnami/solr](https://hub.docker.com/r/bitnami/solr) docker image for better authentication support
 
 ## 2.0.0 (2024-01-04)
 
