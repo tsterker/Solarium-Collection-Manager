@@ -37,7 +37,7 @@ x-solr: &solr
     SOLR_ZK_HOSTS: zoo1:2181,zoo2:2181,zoo3:2181
 
     SOLR_ENABLE_CLOUD_MODE: yes  # This will enable cloud mode and requires zookeeper (SOLR_ZK_HOSTS)
-    SOLR_CLOUD_BOOTSTRAP: yes  # This will bootstap Solr cloud; in case of multiple Solr instances, only one of them should enable this
+    # SOLR_CLOUD_BOOTSTRAP is set per service to avoid race conditions
 
     SOLR_ENABLE_AUTHENTICATION: yes
 
@@ -70,6 +70,7 @@ services:
      - "8983:8983"
     environment:
       <<: *solr-environment
+      SOLR_CLOUD_BOOTSTRAP: yes  # Only solr1 should bootstrap
 
 
   solr2:
@@ -77,12 +78,14 @@ services:
     container_name: solr2
     environment:
       <<: *solr-environment
+      SOLR_CLOUD_BOOTSTRAP: no  # Disable bootstrap for other nodes
 
   solr3:
     <<: *solr
     container_name: solr3
     environment:
       <<: *solr-environment
+      SOLR_CLOUD_BOOTSTRAP: no  # Disable bootstrap for other nodes
 
   zoo1:
     <<: *zookeeper
