@@ -1,108 +1,109 @@
 # Start a simple cluster with three ZooKeeper nodes and three Solr nodes.
-# Source: https://github.com/docker-solr/docker-solr-examples/blob/master/docker-compose/docker-compose.yml
+# Using the [bitnami/solr](https://hub.docker.com/r/bitnami/solr) image for easier authentication setup.
 
-version: '3.7'
+x-zookeeper: &zookeeper
+  image: docker.io/bitnami/zookeeper:3.9
+  ports:
+    - '2181'
+    - '2888'
+    - '3888'
+  environment: &zookeeper-environment
+    ZOO_SERVER_ID: 1  # NOTE: If you want to have an zookeeper ensemble, each must define their own unique ID
+    ALLOW_ANONYMOUS_LOGIN: yes
+    ZOO_4LW_COMMANDS_WHITELIST: srvr,mntr,conf,ruok
+    BITNAMI_DEBUG: true
+
+  healthcheck:
+    test: nc -z localhost 2181 || exit -1
+    interval: 30s
+    timeout: 5s
+    retries: 3
+    start_period: 30s
+
+x-solr: &solr
+  image: docker.io/bitnami/solr:9.6.0
+  ports:
+    - '8983'
+  depends_on:
+    - zoo1
+    - zoo2
+    - zoo3
+  environment: &solr-environment
+    BITNAMI_DEBUG: true
+
+    SOLR_LOG_LEVEL: WARN
+    SOLR_HEAP: "${SOLR_HEAP_SIZE:-512m}"
+
+    SOLR_ZK_HOSTS: zoo1:2181,zoo2:2181,zoo3:2181
+
+    SOLR_ENABLE_CLOUD_MODE: yes  # This will enable cloud mode and requires zookeeper (SOLR_ZK_HOSTS)
+    # SOLR_CLOUD_BOOTSTRAP is set per service to avoid race conditions
+
+    SOLR_ENABLE_AUTHENTICATION: yes
+
+    # NOTE: We need to set the SOLR_AUTH* environment variables so that solr scripts can
+    # still talk to the Solr instances, once authentication is enabled.
+    # The SOLR_AUTHENTICATION_OPTS should be specified in the Solr services that use this template.
+    # We don't really need this right now, but set this to avoid potential issues in the future.
+    # e.g.
+    # - Collection creation should work                           : docker compose exec solr-records solr create -c foo
+    # - Configuring invalid credentials fails collection creation : docker compose exec --env SOLR_AUTHENTICATION_OPTS='-Dbasicauth=foo:bar' solr-records solr create -c foo
+    SOLR_AUTH_TYPE: "basic"
+    SOLR_ADMIN_USERNAME: "admin"
+    SOLR_ADMIN_PASSWORD: "Bitnami"
+    SOLR_AUTHENTICATION_OPTS: "-Dbasicauth=admin:Bitnami"
+
+  healthcheck:
+    # NOTE: Is available publicly, even when auth is enabled
+    # See `health` permission in default security.json (https://github.com/apache/solr/blob/main/solr/core/src/resources/security.json)
+    # See Solr docs for health endpoint: https://solr.apache.org/guide/solr/latest/configuration-guide/implicit-requesthandlers.html
+    test: ["CMD", "curl", "-f", "localhost:8983/api/node/health"]
+    start_period: 30s
+    interval: 30s
+    retries: 3
+
 services:
   solr1:
-    image: solr:9.4
+    <<: *solr
     container_name: solr1
     ports:
      - "8983:8983"
     environment:
-      - ZK_HOST=zoo1:2181,zoo2:2181,zoo3:2181
-    networks:
-      - solr
-    depends_on:
-      - zoo1
-      - zoo2
-      - zoo3
-    healthcheck:
-        test: ["CMD", "curl", "-f", "http://localhost:8983/solr/admin/collections?action=CLUSTERSTATUS"]
-        interval: 1s
-        retries: 30
+      <<: *solr-environment
+      SOLR_CLOUD_BOOTSTRAP: yes  # Only solr1 should bootstrap
+
 
   solr2:
-    image: solr:9.4
+    <<: *solr
     container_name: solr2
     environment:
-      - ZK_HOST=zoo1:2181,zoo2:2181,zoo3:2181
-    networks:
-      - solr
-    depends_on:
-      - zoo1
-      - zoo2
-      - zoo3
-    healthcheck:
-        test: ["CMD", "curl", "-f", "http://localhost:8983/solr/admin/collections?action=CLUSTERSTATUS"]
-        interval: 1s
-        retries: 30
+      <<: *solr-environment
+      SOLR_CLOUD_BOOTSTRAP: no  # Disable bootstrap for other nodes
 
   solr3:
-    image: solr:9.4
+    <<: *solr
     container_name: solr3
     environment:
-      - ZK_HOST=zoo1:2181,zoo2:2181,zoo3:2181
-    networks:
-      - solr
-    depends_on:
-      - zoo1
-      - zoo2
-      - zoo3
-    healthcheck:
-        test: ["CMD", "curl", "-f", "http://localhost:8983/solr/admin/collections?action=CLUSTERSTATUS"]
-        interval: 1s
-        retries: 30
+      <<: *solr-environment
+      SOLR_CLOUD_BOOTSTRAP: no  # Disable bootstrap for other nodes
 
   zoo1:
-    image: zookeeper:3.9
-    container_name: zoo1
-    restart: always
-    hostname: zoo1
+    <<: *zookeeper
     environment:
-      ZOO_MY_ID: 1
-      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
-      ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok
-      ZOO_CFG_EXTRA: "metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true"
-    networks:
-      - solr
-    healthcheck:
-        test: nc -z localhost 2181 || exit -1
-        interval: 1s
-        retries: 30
+      <<: *zookeeper-environment
+      ZOO_SERVERS: zoo1:2888:3888,zoo2:2888:3888,zoo3:2888:3888
+      ZOO_SERVER_ID: 1
 
   zoo2:
-    image: zookeeper:3.9
-    container_name: zoo2
-    restart: always
-    hostname: zoo2
+    <<: *zookeeper
     environment:
-      ZOO_MY_ID: 2
-      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
-      ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok
-      ZOO_CFG_EXTRA: "metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true"
-    networks:
-      - solr
-    healthcheck:
-        test: nc -z localhost 2181 || exit -1
-        interval: 1s
-        retries: 30
+      <<: *zookeeper-environment
+      ZOO_SERVERS: zoo1:2888:3888,zoo2:2888:3888,zoo3:2888:3888
+      ZOO_SERVER_ID: 2
 
   zoo3:
-    image: zookeeper:3.9
-    container_name: zoo3
-    restart: always
-    hostname: zoo3
+    <<: *zookeeper
     environment:
-      ZOO_MY_ID: 3
-      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
-      ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok
-      ZOO_CFG_EXTRA: "metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true"
-    networks:
-      - solr
-    healthcheck:
-        test: nc -z localhost 2181 || exit -1
-        interval: 1s
-        retries: 30
-
-networks:
-  solr:
+      <<: *zookeeper-environment
+      ZOO_SERVERS: zoo1:2888:3888,zoo2:2888:3888,zoo3:2888:3888
+      ZOO_SERVER_ID: 3

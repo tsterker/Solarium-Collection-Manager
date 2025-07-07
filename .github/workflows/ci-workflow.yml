@@ -30,12 +30,7 @@ jobs:
       - run: composer install
 
       - name: Start SolrCloud
-        run: docker-compose up -d
-
-      - name: Sleep a few seconds to wait for Solr to be ready
-        uses: jakejarvis/wait-action@master
-        with:
-          time: "10s"
+        run: docker compose up -d --wait
 
       - name: PHPUnit
         run: ./vendor/bin/phpunit --testdox --colors=always

@@ -53,6 +53,11 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
         $client = new Client($adapter, $eventDispatcher, $config);
 
+        $client->getEndpoint()->setAuthentication(
+            SOLR_USERNAME,
+            SOLR_PASSWORD,
+        );
+
         return new CollectionManager($client);
     }
 }
