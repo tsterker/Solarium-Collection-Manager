@@ -12,6 +12,7 @@ We do this by now using Solr test setup that requires authentication and thus fo
 - fix: Authentication credentials configured for an endpoint are not used for raw HTTP requests to Solr
 - feat: Better error message in case of failed raw HTTP requests to Solr
 - test: Move to [bitnami/solr](https://hub.docker.com/r/bitnami/solr) docker image for better authentication support
+- ci: Change `docker-compose` to `docker compose` to fix failing job
 
 ## 2.0.0 (2024-01-04)
 
