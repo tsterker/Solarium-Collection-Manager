@@ -218,9 +218,13 @@ class CollectionManager implements CollectionManagerInterface
         $base_uri = "{$scheme}://{$host}:{$port}/solr";
 
         $url = "{$base_uri}/{$path}";
-        $res = file_get_contents($url);
 
-        assert(false !== $res, "Request failed: $url");
+        $res = file_get_contents($url);
+        if (false === $res) {
+            $error = error_get_last();
+            $errorMessage = isset($error['message']) ? $error['message'] : 'Unknown error';
+            throw new \RuntimeException("Request failed: $url. Error: $errorMessage");
+        }
 
         $json = json_decode($res, true);
 
