@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] (YYYY-mm-dd)
 
+- fix: authentication credentials configured for an endpoint are not used for raw HTTP requests to Solr
 - feat: better error message in case of failed raw HTTP requests to Solr
 
 ## 2.0.0 (2024-01-04)

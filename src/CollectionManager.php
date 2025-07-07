@@ -219,7 +219,17 @@ class CollectionManager implements CollectionManagerInterface
 
         $url = "{$base_uri}/{$path}";
 
-        $res = file_get_contents($url);
+        $auth = $endpoint->getAuthentication();
+        $contextOptions = [];
+        if (!empty($auth['username']) && !empty($auth['password'])) {
+            $authHeader = 'Authorization: Basic ' . base64_encode("{$auth['username']}:{$auth['password']}");
+            $contextOptions['http'] = [
+                'header' => $authHeader
+            ];
+        }
+
+        $context = stream_context_create($contextOptions);
+        $res = file_get_contents($url, false, $context);
         if (false === $res) {
             $error = error_get_last();
             $errorMessage = isset($error['message']) ? $error['message'] : 'Unknown error';
